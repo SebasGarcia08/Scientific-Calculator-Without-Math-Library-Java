@@ -1,7 +1,8 @@
 import java.util.Scanner;
 
-public class Calculator{
+public class Main{
     public static double[] memory_results = new double[10];
+    final static double PI = 3.14159265358979323846;
     public static void main(String[] args){
         int election;
         boolean dynamic;
@@ -37,104 +38,113 @@ public class Calculator{
  * <b>post: </b> executes the flow for the calculator. 
  * @param  scan_num (numerical scanner) must have been instancied and assgined to a variable.
  * @param  scan_opr(character scanner) must have been instancied and assgined to a variable.
- * @param dynamic variable must have been declared, and its value must be passed in the arguments when this    * method is invoked.
-
+ * @param dynamic variable must have been declared, and its value must be passed in the arguments when this * method is invoked.
 */
     public static void Operation(Scanner scan_num, Scanner scan_opr, boolean dynamic){
         double result = 0;
-        int response = 1;
+        char response = 'y';
         String parser;
         double num1 = 0;
         double num2 = 0;
-        String operation;
+        char operation;
 
-        System.out.println("\nIngrese un número (o función) y luego la operación:");
+        System.out.println("\n Type a number (or function) and later the operand (+,-,*, or /):");
         parser = scan_opr.nextLine();
-        num1 = functionsCalculator(parser);
+        num1 = functions_calculator(parser);
         System.out.println(">> " + num1);
-        while(response==1){
-          operation = scan_opr.nextLine().substring(0, 1);    
+        while(response != 'n'){
+          operation = scan_opr.nextLine().charAt(0);    
             switch(operation){
-                case "+":
+                case '+':
                     parser = scan_opr.nextLine(); 
-                    num2 = functionsCalculator(  parser);
+                    num2 = functions_calculator(  parser);
                     result = num1 + num2;
                     System.out.println(">> "+ result);
                     break;
-                case "-":
+                case '-':
                     parser = scan_opr.nextLine(); 
-                    num2 = functionsCalculator(parser);
+                    num2 = functions_calculator(parser);
                     result = num1 - num2;
                     System.out.println(">> "+ result);
                     break;
-                case "*":
+                case '*':
                     parser = scan_opr.nextLine(); 
-                    num2 = functionsCalculator(parser);
+                    num2 = functions_calculator(parser);
                     result = num1*num2;
                     System.out.println(">> "+ result);
                     break;
-                case "/":
+                case '/':
                     parser = scan_opr.nextLine(); 
-                    num2 = functionsCalculator(parser);
+                    num2 = functions_calculator(parser);
                     result = num1/num2;
                     System.out.println(">> "+ result);
                     break;
-                case "%":
+                case '%':
                     parser = scan_opr.nextLine(); 
-                    num2 = functionsCalculator(parser);
+                    num2 = functions_calculator(parser);
                     result = num1%num2;
                     System.out.println(">> "+ result);
                     break;
-                case "#":
+                case '#':
                     if(dynamic){
-                      System.out.println("Cambiando al modo de operación única...");
+                      System.out.println("Changing to the unique-operation mode...");
                       dynamic = false;
                       break;
                     } else {
-                      System.out.println("Cambiando al modo de operación dinámica; ingresa la operación...");
+                      System.out.println("Changing to the dynamic operation mode...");
+                      System.out.println("\n Type a number (or function) and later the operand (+,-,*, or /):");
                       dynamic = true;
                     }
 
                     break;
                 default:
-                    System.out.println("Ingresa una operación válida");
+                    System.out.println("Type a valid operation (+, -, * or /)");
                     break;
             }
             if(dynamic){
               num1 = result;
             } else {
-              System.out.println("¿Desea continuar con otra operación matemática? \n 1). Sí \n0). No, quiero salir.");
-              response = scan_num.nextInt();
-              if (response == 0){
-                System.out.println("¡Adiós!");
+              System.out.println("Do you want to input another mathematical operation? Type: \n y: Yes \n n: No, exit. \n #: Change to dynamic mode");
+              response = scan_opr.nextLine().charAt(0);
+              if (response == 'n'){
+                System.out.println("Goodbye!");
                 break;
+                } else if(response == '#'){
+                  dynamic = true;
+                  System.out.println("Changing to the dynamic operation mode...");
+                  System.out.println("\nType a number (or function) and later the operand (+,-,*, or /):");
                 }
               parser = scan_opr.nextLine();
-              num1 = functionsCalculator(parser);
+              num1 = functions_calculator(parser);
             }
             memory_results = sliceArray(memory_results, result);
         }
     }
 
-    public static double functionsCalculator(String parser){
+    public static double functions_calculator(String parser){
       double num1=0;
       String[] params_array;
       double[] params;
       String params_string;
       String func_indicator;
+      boolean isOnlyNumber = false;
 
-      if ( parser.substring(0, 1).matches("[0-9]+") ) {
-          /* If the first character is a number, then num1 is going to be a number */
-            // System.out.println("Contiene número.");
-            num1 = (double) Double.parseDouble(parser);
-        } else {
+      try {
+        num1 = (double) Double.parseDouble(parser);
+        isOnlyNumber = true;
+      }
+      catch(Exception e){
+        isOnlyNumber = false;
+      }
+      
+      if(!isOnlyNumber) {
           // System.out.println("NO Contiene número.");
           func_indicator = parser.split("[\\(\\)]")[0];
           params_string = (parser.split("[\\(\\)]").length == 1) ? "" : parser.split("[\\(\\)]")[1];
           params_array = params_string.split(",");
           params = new double[params_array.length];
           
-          if(params_array.length > 1){
+          if(params_array.length > 0 && params_array[0].matches("[0-9]+")){
             for(int i=0; i<params_array.length; i++){
           /* Fill the  params array with the casted values in params_array. 
             func_indicator is, E.g. "cos" when "cos(0)".
@@ -142,20 +152,20 @@ public class Calculator{
             params[1] is the second argument of function. E.g. 0 when "log(0,9)"
             */
             params[i] = (double) Double.parseDouble(params_array[i]);
-            }
+            } 
           }
                     
-          // System.out.println("Función es: " + func_indicator);
-          // System.out.println("Valor: " + func_value);
+          //System.out.println("Función es: " + func_indicator);
+          //System.out.println("Valor: " + params[0]);
           switch(func_indicator){
             case "cos":
               num1 = Math.cos(params[0]);
               break;
             case "sin":
-              num1 = Math.sin(params[0]);
+              num1 = sin(params[0]);
               break;
             case "tan":
-              num1 = Math.tan(params[0]);
+              num1 = sin(params[0])/Math.cos(params[0]);
               break;
             case "log10":
               num1 = Math.log10(params[0]);
@@ -167,31 +177,37 @@ public class Calculator{
               num1 = Math.log(params[0]);
               break;
             case "exp":
-              num1 = Math.exp(params[0]);
+              num1 = e(params[0]);
               break;
             case "fact":
               num1 = factorial(params[0]);
               break;
             case "rzc":
-              num1 = Math.sqrt(params[0]);
+              num1 = sqrt(params[0]);
               break;
             case "rz":
-              num1 = Math.pow(params[0], 1/params[1]);
+               // rz(3,8) = 2 (third root of 8)
+              num1 = Math.pow(params[1], 1/params[0]);
               break;
             case "pot":
-              num1 = Math.pow(params[0], params[1]);
+              num1 = power((int) params[0], (int) params[1]);
               break;
-            case "grad":
-              num1 = Math.toDegrees(params[0]);
+            case "grad->rad":
+              num1 = degrees2Rads(params[0]);
               break;
-            case "rad":
-              num1 = Math.toRadians(params[0]);
+            case "rad->grad":
+              num1 = rad2Degrees(params[0]);
               break;
             case "pi":
-              num1 = 3.14159265359;
+              num1 = PI;
               break;
             case "mem":
-              num1 = memory_results[ (int) params[0]+1];
+              num1 = memory_results[ (int) params[0]-1];
+              break;
+            case "convert":
+                 System.out.println("Decimal to hexadecimal: " + decimalToHex((int) params[0]));
+                 System.out.println("Hexadecimal to decimal: " + hexToDecimal(params_array[0]));
+                 System.out.println("Decimal to binary: " + Integer.toString((int) params[0], 2));
               break;
             case "memory":
                 String mem_res_text = "\n Los últimos diez resultados en memoria son: \n";
@@ -215,39 +231,81 @@ public class Calculator{
       return array;
     } 
 
+    public static int power(int x, int y) 
+    { 
+        if (y == 0) 
+            return 1; 
+        else if (y % 2 == 0) 
+            return power(x, y / 2) * power(x, y / 2); 
+        else
+            return x * power(x, y / 2) * power(x, y / 2); 
+    } 
+
     public static double factorial(double num) {
 		double i;
-		double fact_result;
+		double resultado;
 		if (num==0) {
-			fact_result = 1;
+			resultado = 1;
 		} else {
-			fact_result = 1;
+			resultado = 1;
 			for (i=1;i<=num;i++) {
-				fact_result = fact_result*i;
+				resultado = resultado*i;
 			}
 		}
-		return fact_result;
+		return resultado;
 	}
 
-	public static double cosine(double x) {
-		double cosx;
-		double n;
-		cosx = 0;
-		for (n=0;n<100;n++) {
-			cosx = cosx+((Math.pow((-1),n)*Math.pow(x,(2*n)))/factorial(2*n));
-		}
-		return cosx;
-	}
 
-	public static double sine(double x) {
-		double n;
-		double sinx;
-		sinx = 0;
-		for (n=0;n<100;n++) {
-			sinx = sinx+((Math.pow((-1),n)*Math.pow(x,(2*n+1)))/factorial(2*n+1));
-		}
-		return sinx;
-	}
+	public static double sin(double a) {
+
+    if (a == Double.NEGATIVE_INFINITY || !(a < Double.POSITIVE_INFINITY)) {
+        return Double.NaN;
+    }
+    // If you can't use Math.PI neither,
+    // you'll have to create your own PI
+
+    // Fix the domain for a...
+
+    // Sine is a periodic function with period = 2*PI
+    a %= 2 * PI;
+    // Any negative angle can be brought back
+    // to it's equivalent positive angle
+    if (a < 0) {
+        a = 2 * PI - a;
+    }
+    // Also sine is an odd function...
+    // let's take advantage of it.
+    int sign = 1;
+    if (a > PI) {
+        a -= PI;
+        sign = -1;
+    }
+    // Now a is in range [0, pi].
+    // Calculate sin(a)
+
+    // Set precision to fit your needs.
+    // Note that 171! > Double.MAX_VALUE, so
+    // don't set PRECISION to anything greater
+    // than 84 unless you are sure your
+    // Factorial.factorial() can handle it
+    final int PRECISION = 50;
+    double temp = 0;
+    for (int i = 0; i <= PRECISION; i++) {
+        temp += Math.pow(-1, i) * (Math.pow(a, 2 * i + 1) / factorial(2 * i + 1));
+    }
+
+    return sign * temp;
+}
+
+  public static double rad2Degrees(double radians){
+    double degrees = radians * 180.0 / PI;
+    return degrees;
+  }
+
+  public static double degrees2Rads(double degrees){
+    double radians = degrees * PI / 180.0;
+    return radians;
+  }
 
 	public static double e(double x) {
 		double ex;
@@ -258,4 +316,43 @@ public class Calculator{
 		}
 		return ex;
 	}
+
+    public static double sqrt(double number) {
+      double t;
+    
+      double squareRoot = number / 2;
+    
+      do {
+        t = squareRoot;
+        squareRoot = (t + (number / t)) / 2;
+      } while ((t - squareRoot) != 0);
+    
+      return squareRoot;
+  }
+
+// precondition:  d is a nonnegative integer
+    public static String decimalToHex(int d) {
+        String digits = "0123456789ABCDEF";
+        if (d == 0) return "0";
+        String hex = "";
+        while (d > 0) {
+            int digit = d % 16;                // rightmost digit
+            hex = digits.charAt(digit) + hex;  // string concatenation
+            d = d / 16;
+        }
+        return hex;
+    }
+
+    public static int hexToDecimal(String s) {
+        String digits = "0123456789ABCDEF";
+        s = s.toUpperCase();
+        int val = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            int d = digits.indexOf(c);
+            val = 16*val + d;
+        }
+        return val;
+    }
+
 }
