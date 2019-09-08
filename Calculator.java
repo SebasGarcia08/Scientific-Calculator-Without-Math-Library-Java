@@ -30,12 +30,12 @@ public class Calculator{
 
 /** 
  * Define the basic structure of the calculator, which look like this:  <br />
- *      sen(0)   // real number (e, pi, etc...) or mathematical function that return a value. <br /> 
- *      +        // arithmetic operation: sum, substraction, division, multiplication. <br />
- *      cos(-1)  // real number (e, pi, etc...) or mathematical function that return a value. <br />
- *      >> 1.0   // result, which in dynamic  <br />
- * <b>pre: </b> election must have some value. <br />
- * <b>post: </b> executes the operation-flow for the calculator. <br /> 
+ *      sen(0)   // real number (e, pi, etc...) or mathematical function that return a value. 
+ *      +        // arithmetic operation: sum, substraction, division, multiplication. 
+ *      cos(-1)  // real number (e, pi, etc...) or mathematical function that return a value. 
+ *      >> 1.0   // result, which in dynamic  
+ * <b>pre: </b> election must have some value.
+ * <b>post: </b> executes the operation-flow for the calculator.  
  * @param is_dynamic variable must have been declared, and its value must be passed in the arguments when this method is invoked.
 */
     public static void Operation(boolean is_dynamic){
@@ -70,7 +70,10 @@ public class Calculator{
                   result = num1*num2;
                   break;
               case '/':
-                  result = num1/num2;
+                  if(num2!=0)
+                    result = num1/num2;
+                  else 
+                    System.out.println("Do you want the universe to explode? Division by zero isn't supported.");
                   break;
               case '%':
                   result = num1%num2;
@@ -105,10 +108,10 @@ public class Calculator{
 
   /**
    * functionsCalculator is encharged of assigning its corrsponding value to the num1 and num2 variables above. <br />
-   * Which is achieved by parsing the string input and deciding wheter is a plain number or a function. <b />
-   * <b>post: <b/> num1 and num2 will never have a invalid value since their value always is parsed using this method. <b />.
-   * @param parser must have a value assgined to it; i cannot be null or empty. <b />
-   * @return a double number corresponding to the value expressed in parser; if this isn't valid, then returns 0 and notifies it to the user. <b />
+   * Which is achieved by parsing the string input and deciding wheter is a plain number or a function.
+   * <b>post: <b/> num1 and num2 will never have a invalid value since their value always is parsed using this method. 
+   * @param parser must have a value assgined to it; i cannot be null or empty. 
+   * @return a double number corresponding to the value expressed in parser; if this isn't valid, then returns 0 and notifies it to the user. 
    */
     public static double functionsCalculator(String parser){
       double num1=0;
@@ -118,7 +121,7 @@ public class Calculator{
       boolean isOnlyNumber = true;
 
       try {
-        num1 = Double.parseDouble(parser);
+        num1 = (parser.contains("/")) ? parseFraction(parser) : Double.parseDouble(parser);
       }
       catch(Exception e){
         isOnlyNumber = false;
@@ -130,15 +133,19 @@ public class Calculator{
           params_array = params_string.split(",");
           params = new double[params_array.length];
           
-          if(params_array.length > 0 && params_array[0].matches("[0-9]+")){
-            for(int i=0; i<params_array.length; i++){
-          /* Fill the  params array with the casted values in params_array. 
-            func_indicator is, E.g. "cos" when "cos(0)".
-            params[0] is the first argument of function. E.g. 9 when "ln(9)"
-            params[1] is the second argument of function. E.g. 0 when "log(0,9)"
-            */
-            params[i] = (double) Double.parseDouble(params_array[i]);
-            } 
+          if(params_array.length > 0){
+            try{
+              for(int i=0; i<params_array.length; i++){
+                /* Fill the  params array with the casted values in params_array. 
+                  func_indicator is, E.g. "cos" when "cos(0)".
+                  params[0] is the first argument of function. E.g. 9 when "ln(9)"
+                  params[1] is the second argument of function. E.g. 0 when "log(0,9)"
+                  */
+                  params[i] = (params_array[i].contains("/")) ? parseFraction(params_array[0]) : Double.parseDouble(params_array[i]);
+                  }
+            } catch(Exception e){
+              // If exception occured, means that the input isn't a number, and be handled below.
+            }
           }
             
           switch(func_indicator){
@@ -156,7 +163,11 @@ public class Calculator{
              break;
             case "log":
               //      log(base, x), e.g. log(5, 25) = 2
-              num1 =  log(params[0], params[1]); 
+              try {
+                num1 =  log(params[0], params[1]); 
+              } catch (ArrayIndexOutOfBoundsException e){
+                System.out.println("You forgot to add the other argument! Remember that log(base, N)");
+              }
               break;
             case "ln":
               num1 = ln(params[0]);
@@ -165,14 +176,14 @@ public class Calculator{
               num1 = e(params[0]);
               break;
             case "fact":
-              num1 = factorial(params[0]);
+              num1 = factorial( (int) params[0]);
               break;
             case "rzc":
               num1 = sqrt(params[0]);
               break;
             case "rz":
                // rz(3,8) = 2 (third root of 8)
-              num1 = nthRoot(params[0], params[1]);
+              num1 = nthRoot((int) params[0], params[1]);
               break;
             case "pot":
               num1 = power(params[0], params[1]);
@@ -185,6 +196,9 @@ public class Calculator{
               break;
             case "pi":
               num1 = Calculator.PI;
+              break;
+            case "e":
+              num1 = Calculator.E;
               break;
             case "mem":
               num1 = memory_results[ (int) params[0]-1];
@@ -210,10 +224,10 @@ public class Calculator{
 
 /**
  * Slices an double array to the left, i. e. the first element is dropped and another is added at last position <br />
- * <b>post: <b/> every result in calculator will be added at last position of the memory_results array <br />
- * @param array must be initialized and must have a length assigned. <br />
- * @param element must be double. <br />
- * @return the same array with the same length, but its last element being the passed in parameter and its oldest one being dropped. <br /> 
+ * <b>post: <b/> every result in calculator will be added at last position of the memory_results array.
+ * @param array must be initialized and must have a length assigned.
+ * @param element must be double. 
+ * @return the same array with the same length, but its last element being the passed in parameter and its oldest one being dropped. 
  */
     public static double[] sliceArray(double[] array, double element){
       for(int i=0; i<(array.length-1);i++){
@@ -223,81 +237,177 @@ public class Calculator{
       return array;
     } 
 
-    public static double nthRoot(double Rt, double Power){
-    /* (C) John Gabriel */
-    double A, N, S, T, L, R;
-    A = Power;
-    N = Rt;
-    S = 1.0;
+  /**
+   * Covnerts a string that contains a fraction into its double value. E.g. converts "1/2" into 0.5
+   * @param expression must contain a fraction in it; otherwise it would invoke an error.
+   * @return fraction, the numerical equivalent of the fraction string passed.
+   */
+    public static double parseFraction(String expression){
+        String[] rat = expression.split("/");
+        double fraction = Double.parseDouble(rat[0]) / Double.parseDouble(rat[1]);
+      return fraction;
+    }
 
-    do
-    {
-        T = S;
-        L = ( A / Math.pow(S, (N - 1.0)));
-        R = (N - 1.0) *  S;
-        S = (L + R) / N;
-    }while(L != S);
-    return S;
+    /**
+     * Calculates the nth-root of a double number.
+     * @param n must be positive integer number; otherwise it would ran an error.
+     * @param A must be positive real number whenever the index n be even number; otherwise it would invoke an imaginary response.
+     * @return the nth-root of Power; if and only if none of these are undefined or unreal numbers.
+     */
+    public static double nthRoot(int n, double A) {
+      double x0 = 1;
+      boolean accurate = false;
+      while (!accurate) {
+          double x1 = (1 / (double)n) * ((n - 1) * x0 + A / pow(x0, n - 1));
+          accurate = accurate(x0, x1);
+          x0 = x1;
+      }
+      return x0;
   }
 
+
+  public static boolean accurate(double x0, double x1) {
+      return Math.abs(x1-x0) < 0.000001;
+  }
+
+  /**
+   * Calculates the logarithm of base B for a number N, taking advantage of the logarithm's properties.
+   * @param B must be real positive number; otherwise would not be defined.
+   * @param N must be real positive number; otherwise would not be defined.
+   * @return the logarithm of base B for a number N.
+   */
     public static double log(double B, double N){
       if (B==2) return (ln(N) / 0.69314718055995);
       else if (B==10) return (ln(N) / 2.30258509299405);
       else return (ln(N) / ln(B)); 
-    /*
-     * To find the Log of Base 2, use
-     * return (Ln(N) / 0.69314718055995);
-     *
-     * For the Log of Base 10, use
-     * return (Ln(N) / 2.30258509299405);
-             *
-             * And make sure you get rid of the 'double B' Parameter
+    }
+
+    /**
+     * Calculates the natural logarithm for power x by its integral.
+     * @param Power cannot be negative, otherwise the result would be be undefined.
+     * @return Natural logarithm of x.
      */
-    }
+    public static double ln(double Power){
+      if(Power < 0){
+        System.out.println("Do you want the universe to explode? Undefined result.");
+        return 0;
+      }
+      else {
+          double N, P, L, R, A, E;
+          E = 2.71828182845905;
+          P = Power;
+          N = 0.0;
+                  // This speeds up the convergence by calculating the integral
+          while(P >= E)
+          {
+              P /= E;
+              N++;
+          }
+          N += (P / E);
+          P = Power;
+          do
+          {
+              A = N;
+              L = (P / (e(N - 1.0)));
+              R = ((N - 1.0) * E);
+              N = ((L + R) / E);
+          }while(N != A);
 
-    public static double ln(double Power)
-    {
-        double N, P, L, R, A, E;
-        E = Calculator.E;
-        P = Power;
-        N = 0.0;
-                // This speeds up the convergence by calculating the integral
-        while(P >= E)
-        {
-            P /= E;
-            N++;
+          return N;
         }
-                N += (P / E);
-        P = Power;
+      }
     
-        do
-        {
-            A = N;
-            L = (P / (e(N - 1.0)));
-            R = ((N - 1.0) * E);
-            N = ((L + R) / E);
-        }while(N != A);
-    
-        return N;
-    }
-    
-
-    public static double power(double Base, double Power){ 
-    return e(Power * ln(Base));
+      /**
+       * Calculates the absolute value for number num.
+       * @param num must be real number.
+       * @return absolute value of num.
+       */
+    public static double abs(double num){
+      if (num<0) return num*-1;
+      else return num;
     }
 
-    public static double e(double Exponent)
-    {
-        return Math.exp(Exponent);
+    /**
+     * Caculates the decimal power of decimal base and decimal exponent using the properties of natural logarithms and exponential function.
+     * @param base must be declared and initialized.
+     * @param exponent must be declared and initialized.
+     * @return the n-th power of base n number.
+     */
+     public static double power(double base, double exponent){
+      if(exponent == 0){
+        return 1;
+      } else if(exponent==1){
+        return base;
+      } else if(exponent < 0){
+        return 1/power(base, abs(exponent));
+      }
+      else if(base < 0 && exponent<1){
+        System.out.println("Not in real numbers");
+        return 0;
+      } else {
+        return e(exponent * ln(abs(base)));
+      }
     }
 
-    public static double factorial(double num) {
-      if(num==0) return 1;
-      else return num * factorial(num -1);
-	  }
+    /**
+     * Calculates an aproximation for the exponential function.
+     * @param Exponent must be decimal real number. 
+     * @return euler's number to the exponent-th power.
+     */
+    public static double e(double Exponent){
+      double X, P, Frac, I, L;
+      X = Exponent;
+      Frac = X;
+      P = (1.0 + X);
+      I = 1.0;
 
+      do
+      {
+          I++;
+          Frac *= (X / I);
+          L = P;
+          P += Frac;
+      }while(L != P);
 
-	public static double sin(double a) {
+      return P;
+    }
+
+    /**
+     * Calculates the factorial of number num using recursion
+     * @param num must be positive integer number.
+     * @return the factorial for num number.
+     */
+    public static double factorial(int num) {
+      double fact_result=1;
+      if (num==0) {
+        return fact_result;
+      } else {
+        for (int i=1;i<=num;i++) {
+          fact_result = fact_result*i;
+        }
+      }
+      return fact_result;
+    }
+
+/**
+ * Calculates the n-th power for base number a.
+ * @param a must be declared and initalized number.
+ * @param n must be declared and initalized number.
+ * @return the n-th power for base number a.
+ */
+  public static double pow(double x, int n) {
+    if(n == 0) {
+        return 1;
+    }
+    return x * pow(x, n-1);
+}
+
+  /**
+   * Calculates the aproximate value of sinusodial function for number a using Taylor series with periodic accuracy improvement.
+   * @param a cannot be infinity, must be real number.
+   * @return aproximation value of sinusodial function at point a.
+   */
+  public static double sin(double a) {
 
     if (a == Double.NEGATIVE_INFINITY || !(a < Double.POSITIVE_INFINITY)) {
         return Double.NaN;
@@ -329,12 +439,11 @@ public class Calculator{
     // don't set PRECISION to anything greater
     // than 84 unless you are sure your
     // Factorial.factorial() can handle it
-    final int PRECISION = 50;
+    final int PRECISION = 84;
     double temp = 0;
     for (int i = 0; i <= PRECISION; i++) {
-        temp += power(-1, i) * (power(a, 2 * i + 1) / factorial(2 * i + 1));
+        temp += pow(-1, i) * (pow(a, 2 * i + 1) / factorial(2 * i + 1));
     }
-
     return sign * temp;
 }
 
@@ -348,6 +457,11 @@ public class Calculator{
     return radians;
   }
 
+    /**
+     * Calculates the square root of number.
+     * @param number must be a real, positive, and defined number; 
+     * @return square root for number.
+     */
     public static double sqrt(double number) {
       double t;
     
@@ -361,7 +475,11 @@ public class Calculator{
       return squareRoot;
   }
 
-// precondition:  d is a nonnegative integer
+/**
+ * Calculates the hexadecimal value of integer d.
+ * @param d is a nonnegative integer
+ * @return the hexadecimal value of integer d
+ */
     public static String decimalToHex(int d) {
         String digits = "0123456789ABCDEF";
         if (d == 0) return "0";
@@ -373,7 +491,11 @@ public class Calculator{
         }
         return hex;
     }
-
+    /**
+     * Calculates the integer value for String input s.
+     * @param s must be compatible with hexadecimal system.
+     * @return integer value for String input s.
+     */
     public static int hexToDecimal(String s) {
         String digits = "0123456789ABCDEF";
         s = s.toUpperCase();
