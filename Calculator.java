@@ -3,6 +3,7 @@ import java.util.Scanner;
 public class Calculator{
     public static double[] memory_results = new double[10];
     final static double PI = 3.14159265358979323846;
+    final static double E = 2.71828182845905;
     public static void main(String[] args){
         int election;
         boolean dynamic;
@@ -33,11 +34,9 @@ public class Calculator{
  *      +        // arithmetic operation: sum, substraction, division, multiplication. <br />
  *      cos(-1)  // real number (e, pi, etc...) or mathematical function that return a value. <br />
  *      >> 1.0   // result, which in dynamic  <br />
- * <b>pre: </b> election must have some value.
- * <b>post: </b> executes the flow for the calculator. 
- * @param  scan_num (numerical scanner) must have been instancied and assgined to a variable.
- * @param  scan_opr(character scanner) must have been instancied and assgined to a variable.
- * @param is_dynamic variable must have been declared, and its value must be passed in the arguments when this * method is invoked.
+ * <b>pre: </b> election must have some value. <br />
+ * <b>post: </b> executes the operation-flow for the calculator. <br /> 
+ * @param is_dynamic variable must have been declared, and its value must be passed in the arguments when this method is invoked.
 */
     public static void Operation(boolean is_dynamic){
         Scanner sc = new Scanner(System.in);
@@ -104,6 +103,13 @@ public class Calculator{
         }
     }
 
+  /**
+   * functionsCalculator is encharged of assigning its corrsponding value to the num1 and num2 variables above. <br />
+   * Which is achieved by parsing the string input and deciding wheter is a plain number or a function. <b />
+   * <b>post: <b/> num1 and num2 will never have a invalid value since their value always is parsed using this method. <b />.
+   * @param parser must have a value assgined to it; i cannot be null or empty. <b />
+   * @return a double number corresponding to the value expressed in parser; if this isn't valid, then returns 0 and notifies it to the user. <b />
+   */
     public static double functionsCalculator(String parser){
       double num1=0;
       String[] params_array;
@@ -119,7 +125,6 @@ public class Calculator{
       }
       
       if(!isOnlyNumber) {
-          // System.out.println("NO Contiene número.");
           func_indicator = parser.split("[\\(\\)]")[0];
           params_string = (parser.split("[\\(\\)]").length == 1) ? "" : parser.split("[\\(\\)]")[1];
           params_array = params_string.split(",");
@@ -135,9 +140,7 @@ public class Calculator{
             params[i] = (double) Double.parseDouble(params_array[i]);
             } 
           }
-                    
-          //System.out.println("Función es: " + func_indicator);
-          //System.out.println("Valor: " + params[0]);
+            
           switch(func_indicator){
             case "cos":
               num1 = Math.cos(params[0]);
@@ -149,13 +152,14 @@ public class Calculator{
               num1 = sin(params[0])/Math.cos(params[0]);
               break;
             case "log10":
-              num1 = Math.log10(params[0]);
+              num1 = log(10, params[0]);
              break;
             case "log":
-              num1 = Math.log(params[1]) / Math.log(params[0]); 
+              //      log(base, x), e.g. log(5, 25) = 2
+              num1 =  log(params[0], params[1]); 
               break;
             case "ln":
-              num1 = Math.log(params[0]);
+              num1 = ln(params[0]);
               break;
             case "exp":
               num1 = e(params[0]);
@@ -168,10 +172,10 @@ public class Calculator{
               break;
             case "rz":
                // rz(3,8) = 2 (third root of 8)
-              num1 = Math.pow(params[1], 1/params[0]);
+              num1 = nthRoot(params[0], params[1]);
               break;
             case "pot":
-              num1 = power((int) params[0], (int) params[1]);
+              num1 = power(params[0], params[1]);
               break;
             case "grad->rad":
               num1 = degrees2Rads(params[0]);
@@ -180,7 +184,7 @@ public class Calculator{
               num1 = rad2Degrees(params[0]);
               break;
             case "pi":
-              num1 = PI;
+              num1 = Calculator.PI;
               break;
             case "mem":
               num1 = memory_results[ (int) params[0]-1];
@@ -204,6 +208,13 @@ public class Calculator{
       return num1;
     }
 
+/**
+ * Slices an double array to the left, i. e. the first element is dropped and another is added at last position <br />
+ * <b>post: <b/> every result in calculator will be added at last position of the memory_results array <br />
+ * @param array must be initialized and must have a length assigned. <br />
+ * @param element must be double. <br />
+ * @return the same array with the same length, but its last element being the passed in parameter and its oldest one being dropped. <br /> 
+ */
     public static double[] sliceArray(double[] array, double element){
       for(int i=0; i<(array.length-1);i++){
         array[i] = array[i+1];
@@ -212,20 +223,78 @@ public class Calculator{
       return array;
     } 
 
-    public static double power(double base, int exponent) 
-    { 
-        if (exponent == 0) 
-            return 1; 
-        else if (exponent % 2 == 0) 
-            return power(base, exponent / 2) * power(base, exponent / 2); 
-        else
-            return base * power(base, exponent / 2) * power(base, exponent / 2); 
-    } 
+    public static double nthRoot(double Rt, double Power){
+    /* (C) John Gabriel */
+    double A, N, S, T, L, R;
+    A = Power;
+    N = Rt;
+    S = 1.0;
+
+    do
+    {
+        T = S;
+        L = ( A / Math.pow(S, (N - 1.0)));
+        R = (N - 1.0) *  S;
+        S = (L + R) / N;
+    }while(L != S);
+    return S;
+  }
+
+    public static double log(double B, double N){
+      if (B==2) return (ln(N) / 0.69314718055995);
+      else if (B==10) return (ln(N) / 2.30258509299405);
+      else return (ln(N) / ln(B)); 
+    /*
+     * To find the Log of Base 2, use
+     * return (Ln(N) / 0.69314718055995);
+     *
+     * For the Log of Base 10, use
+     * return (Ln(N) / 2.30258509299405);
+             *
+             * And make sure you get rid of the 'double B' Parameter
+     */
+    }
+
+    public static double ln(double Power)
+    {
+        double N, P, L, R, A, E;
+        E = Calculator.E;
+        P = Power;
+        N = 0.0;
+                // This speeds up the convergence by calculating the integral
+        while(P >= E)
+        {
+            P /= E;
+            N++;
+        }
+                N += (P / E);
+        P = Power;
+    
+        do
+        {
+            A = N;
+            L = (P / (e(N - 1.0)));
+            R = ((N - 1.0) * E);
+            N = ((L + R) / E);
+        }while(N != A);
+    
+        return N;
+    }
+    
+
+    public static double power(double Base, double Power){ 
+    return e(Power * ln(Base));
+    }
+
+    public static double e(double Exponent)
+    {
+        return Math.exp(Exponent);
+    }
 
     public static double factorial(double num) {
-    if(num==0) return 1;
-    else return num * factorial(num -1);
-	}
+      if(num==0) return 1;
+      else return num * factorial(num -1);
+	  }
 
 
 	public static double sin(double a) {
@@ -278,16 +347,6 @@ public class Calculator{
     double radians = degrees * PI / 180.0;
     return radians;
   }
-
-	public static double e(double x) {
-		double ex;
-		int n;
-		ex = 0;
-		for (n=0;n<100;n++) {
-			ex = ex+(power(x,n))/factorial(n);
-		}
-		return ex;
-	}
 
     public static double sqrt(double number) {
       double t;
