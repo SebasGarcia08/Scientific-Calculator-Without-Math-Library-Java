@@ -1,31 +1,30 @@
 import java.util.Scanner;
 
-public class Main{
+public class Calculator{
     public static double[] memory_results = new double[10];
     final static double PI = 3.14159265358979323846;
     public static void main(String[] args){
         int election;
         boolean dynamic;
-        Scanner scan_number = new Scanner(System.in);
-        Scanner scan_operation = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
         
-        System.out.println("Bienvenido a tu calculadora. Ingrese \n1). Para acceder al modo de una operación a la vez (modo único). \n2). Para flujo de operaciones (modo dinámico). \n Cualquier otro número para abandonar.");
-        election = scan_number.nextInt();
+        System.out.print("Welcome to your calculator! Press: \n1). For accesing to one operation at a time (unique mode). \n2). For flow operation mode (dynamic mode). \n[1/2]: ");        
+        election = sc.nextInt();
         switch(election){
             case 1:
                 dynamic = false;
-                Operation(scan_number, scan_operation, (boolean) dynamic);
+                Operation(dynamic);
                 break;
 
             case 2: 
                 dynamic = true;
-                System.out.println("\nBienvenido al modo dinámico. Si quiere regresar al modo 1, ingrese #.");
-                Operation(scan_number, scan_operation, (boolean) dynamic);
+                Operation(dynamic);
                 break;
             default:
-                System.out.println("¡Adiós!"); 
+                System.out.println("Goodbay!"); 
                 break;
         }
+        sc.close();
     }
 
 /** 
@@ -38,100 +37,82 @@ public class Main{
  * <b>post: </b> executes the flow for the calculator. 
  * @param  scan_num (numerical scanner) must have been instancied and assgined to a variable.
  * @param  scan_opr(character scanner) must have been instancied and assgined to a variable.
- * @param dynamic variable must have been declared, and its value must be passed in the arguments when this * method is invoked.
+ * @param is_dynamic variable must have been declared, and its value must be passed in the arguments when this * method is invoked.
 */
-    public static void Operation(Scanner scan_num, Scanner scan_opr, boolean dynamic){
-        double result = 0;
-        char response = 'y';
+    public static void Operation(boolean is_dynamic){
+        Scanner sc = new Scanner(System.in);
+        double result = 0, num1=0, num2=0;
+        char response = 'y', operation;
         String parser;
-        double num1 = 0;
-        double num2 = 0;
-        char operation;
 
-        System.out.println("\n Type a number (or function) and later the operand (+,-,*, or /):");
-        parser = scan_opr.nextLine();
-        num1 = functions_calculator(parser);
+        System.out.println("\n################ Welcome to the dynamic mode! ################\nType a number (or function) and later the operand (+,-,*, or /):");
+        parser = sc.nextLine();
+        num1 = functionsCalculator(parser);
         System.out.println(">> " + num1);
         while(response != 'n'){
-          operation = scan_opr.nextLine().charAt(0);    
-            switch(operation){
-                case '+':
-                    parser = scan_opr.nextLine(); 
-                    num2 = functions_calculator(  parser);
-                    result = num1 + num2;
-                    System.out.println(">> "+ result);
-                    break;
-                case '-':
-                    parser = scan_opr.nextLine(); 
-                    num2 = functions_calculator(parser);
-                    result = num1 - num2;
-                    System.out.println(">> "+ result);
-                    break;
-                case '*':
-                    parser = scan_opr.nextLine(); 
-                    num2 = functions_calculator(parser);
-                    result = num1*num2;
-                    System.out.println(">> "+ result);
-                    break;
-                case '/':
-                    parser = scan_opr.nextLine(); 
-                    num2 = functions_calculator(parser);
-                    result = num1/num2;
-                    System.out.println(">> "+ result);
-                    break;
-                case '%':
-                    parser = scan_opr.nextLine(); 
-                    num2 = functions_calculator(parser);
-                    result = num1%num2;
-                    System.out.println(">> "+ result);
-                    break;
-                case '#':
-                    if(dynamic){
-                      System.out.println("Changing to the unique-operation mode...");
-                      dynamic = false;
-                      break;
-                    } else {
-                      System.out.println("Changing to the dynamic operation mode...");
-                      System.out.println("\n Type a number (or function) and later the operand (+,-,*, or /):");
-                      dynamic = true;
-                    }
 
-                    break;
-                default:
-                    System.out.println("Type a valid operation (+, -, * or /)");
-                    break;
-            }
-            if(dynamic){
+          operation = sc.nextLine().charAt(0);
+          
+          if(operation == '#'){
+            is_dynamic = !is_dynamic;
+            System.out.println( (is_dynamic) ? "Changing to the dynamic operation mode..." : "Changing to the unique-operation mode..." );
+          } 
+          else{
+            parser = sc.nextLine(); 
+            num2 = functionsCalculator(parser);
+            switch(operation){
+              case '+':                         
+                  result = num1 + num2;
+                  break;
+              case '-':
+                  result = num1 - num2;
+                  break;
+              case '*':
+                  result = num1*num2;
+                  break;
+              case '/':
+                  result = num1/num2;
+                  break;
+              case '%':
+                  result = num1%num2;
+                  break;
+              default:
+                  System.out.println("Type a valid operand (+, -, *, /, %, or #)");
+                  break;
+          }
+          System.out.println(">> "+ result);
+        }
+
+            if(is_dynamic){
               num1 = result;
             } else {
-              System.out.println("Do you want to input another mathematical operation? Type: \n y: Yes \n n: No, exit. \n #: Change to dynamic mode");
-              response = scan_opr.nextLine().charAt(0);
+              System.out.print("\nDo you want to input another mathematical operation? Type: \n y: Yes \n n: No, exit. \n #: Change to dynamic mode \n [y/n/#]: ");
+              response = sc.nextLine().charAt(0);
               if (response == 'n'){
                 System.out.println("Goodbye!");
+                sc.close();
                 break;
                 } else if(response == '#'){
-                  dynamic = true;
+                  is_dynamic = true;
                   System.out.println("Changing to the dynamic operation mode...");
-                  System.out.println("\nType a number (or function) and later the operand (+,-,*, or /):");
+                  System.out.println("\nType a number (or function) and later the operand (+, -, *, /, %, or #):");
                 }
-              parser = scan_opr.nextLine();
-              num1 = functions_calculator(parser);
+              parser = sc.nextLine();
+              num1 = functionsCalculator(parser);
             }
             memory_results = sliceArray(memory_results, result);
         }
     }
 
-    public static double functions_calculator(String parser){
+    public static double functionsCalculator(String parser){
       double num1=0;
       String[] params_array;
       double[] params;
-      String params_string;
-      String func_indicator;
-      boolean isOnlyNumber = false;
+      String params_string, func_indicator;
+      boolean isOnlyNumber = true;
 
       try {
-        num1 = (double) Double.parseDouble(parser);
-        isOnlyNumber = true;
+        num1 = Double.parseDouble(parser);
       }
       catch(Exception e){
         isOnlyNumber = false;
@@ -210,13 +191,13 @@ public class Main{
                  System.out.println("Decimal to binary: " + Integer.toString((int) params[0], 2));
               break;
             case "memory":
-                String mem_res_text = "\n Los últimos diez resultados en memoria son: \n";
+                System.out.println("\nThe last ten results in memory are the following:");
                 for(int i=0; i<memory_results.length; i++){
-                  mem_res_text += "\n "+ "#" + (i+1) + "   " + memory_results[i]; 
+                    System.out.println("#" + (i+1) + "   " + memory_results[i]);
                 }
-                System.out.println(mem_res_text);
               break;
             default:
+              System.out.println("You typed a unvalid function or number, this will be taken as 0.");
               break;
           }
       }
@@ -231,28 +212,19 @@ public class Main{
       return array;
     } 
 
-    public static int power(int x, int y) 
+    public static double power(double base, int exponent) 
     { 
-        if (y == 0) 
+        if (exponent == 0) 
             return 1; 
-        else if (y % 2 == 0) 
-            return power(x, y / 2) * power(x, y / 2); 
+        else if (exponent % 2 == 0) 
+            return power(base, exponent / 2) * power(base, exponent / 2); 
         else
-            return x * power(x, y / 2) * power(x, y / 2); 
+            return base * power(base, exponent / 2) * power(base, exponent / 2); 
     } 
 
     public static double factorial(double num) {
-		double i;
-		double resultado;
-		if (num==0) {
-			resultado = 1;
-		} else {
-			resultado = 1;
-			for (i=1;i<=num;i++) {
-				resultado = resultado*i;
-			}
-		}
-		return resultado;
+    if(num==0) return 1;
+    else return num * factorial(num -1);
 	}
 
 
@@ -291,7 +263,7 @@ public class Main{
     final int PRECISION = 50;
     double temp = 0;
     for (int i = 0; i <= PRECISION; i++) {
-        temp += Math.pow(-1, i) * (Math.pow(a, 2 * i + 1) / factorial(2 * i + 1));
+        temp += power(-1, i) * (power(a, 2 * i + 1) / factorial(2 * i + 1));
     }
 
     return sign * temp;
@@ -309,10 +281,10 @@ public class Main{
 
 	public static double e(double x) {
 		double ex;
-		double n;
+		int n;
 		ex = 0;
 		for (n=0;n<100;n++) {
-			ex = ex+(Math.pow(x,n))/factorial(n);
+			ex = ex+(power(x,n))/factorial(n);
 		}
 		return ex;
 	}
