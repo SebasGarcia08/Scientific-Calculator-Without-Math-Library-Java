@@ -1,31 +1,48 @@
 import java.util.Scanner;
+import java.util.Map; 
+import java.util.HashMap;
 
 public class Calculator{
     public static double[] memory_results = new double[10];
     final static double PI = 3.14159265358979323846;
     final static double E = 2.71828182845905;
     public static void main(String[] args){
-        int election;
         boolean dynamic;
+        char manual_election, election= 'u';
+        boolean want_to_read_manual;
         Scanner sc = new Scanner(System.in);
         
-        System.out.print("Welcome to your calculator! Press: \n1). For accesing to one operation at a time (unique mode). \n2). For flow operation mode (dynamic mode). \n[1/2]: ");        
-        election = sc.nextInt();
-        switch(election){
-            case 1:
-                dynamic = false;
-                Operation(dynamic);
-                break;
-
-            case 2: 
-                dynamic = true;
-                Operation(dynamic);
-                break;
-            default:
-                System.out.println("Goodbay!"); 
-                break;
+        System.out.print("\n\n[================ Welcome to your scientific calculator! ================]\nDo you want to read the instructions manual? [y/n]: ");
+        manual_election = sc.nextLine().charAt(0);
+        want_to_read_manual = (manual_election=='y') ? true: false;
+        
+        if(want_to_read_manual){
+          help(want_to_read_manual, "");
         }
-        sc.close();
+        
+        while(election !='e'){
+            System.out.print("\nPress: \n u: For unique mode (accesing to one operation at a time). \n d: For dynamic mode (flow operation). \n e: for exit \n[u/d/e]: ");        
+            election = sc.nextLine().charAt(0);
+            switch(election){
+              case 'u':
+                  dynamic = false;
+                  Operation(dynamic);
+                  election='e';
+                  break;
+              case 'd': 
+                  dynamic = true;
+                  Operation(dynamic);
+                  election='e';
+                  break;
+              case 'e':
+                  System.out.println("Goodbye!");
+                  sc.close();
+                  break;
+              default:
+                  System.out.println("Select a valid answer."); 
+                  break;
+            }
+        }
     }
 
 /** 
@@ -88,9 +105,9 @@ public class Calculator{
             if(is_dynamic){
               num1 = result;
             } else {
-              System.out.print("\nDo you want to input another mathematical operation? Type: \n y: Yes \n n: No, exit. \n #: Change to dynamic mode \n [y/n/#]: ");
+              System.out.print("\nDo you want to input another mathematical operation? Type: \n y: Yes \n e: exit. \n #: Change to dynamic mode \n [y/e/#]: ");
               response = sc.nextLine().charAt(0);
-              if (response == 'n'){
+              if (response == 'e'){
                 System.out.println("Goodbye!");
                 sc.close();
                 break;
@@ -178,20 +195,20 @@ public class Calculator{
             case "fact":
               num1 = factorial( (int) params[0]);
               break;
-            case "rzc":
+            case "sqrt":
               num1 = sqrt(params[0]);
               break;
-            case "rz":
+            case "rt":
                // rz(3,8) = 2 (third root of 8)
               num1 = nthRoot((int) params[0], params[1]);
               break;
-            case "pot":
+            case "pow":
               num1 = power(params[0], params[1]);
               break;
-            case "grad->rad":
+            case "deg->rad":
               num1 = degrees2Rads(params[0]);
               break;
-            case "rad->grad":
+            case "rad->deg":
               num1 = rad2Degrees(params[0]);
               break;
             case "pi":
@@ -199,6 +216,9 @@ public class Calculator{
               break;
             case "e":
               num1 = Calculator.E;
+              break;
+            case "help":
+              help(false, params_array[0]);
               break;
             case "mem":
               num1 = memory_results[ (int) params[0]-1];
@@ -506,6 +526,41 @@ public class Calculator{
             val = 16*val + d;
         }
         return val;
+    }
+
+    public static void help(boolean intitial_manual, String functionMissunderstood){
+      Map<String, String> manual = new HashMap<String, String>();
+      manual.put("cos",         "FUNCTION cos(real number) Example: \ncos(-1) = 0.5403023059 //in radians");
+      manual.put("sin",         "FUNCTION sin(real number) Example: \nsin(-1) = -0.8414709848 //in radians");
+      manual.put("tan",         "FUNCTION tan(real number) Example: \ntan(-1) = -1.557 //in radians");
+      manual.put("log10",       "FUNCTION log10(POSITIVE real number) Example: \nlog10(2) = 0.30102999257");
+      manual.put("log",         "FUNCTION log(base: real number, n: real number) Example: \nlog(5,25) = 2.0");
+      manual.put("ln",          "FUNCTION ln(POSITIVE real number) Example: \nln(2) = 0.69");
+      manual.put("exp",         "FUNCTION exp(real number) Example: \nexp(-2)\n>>0.13");
+      manual.put("fact",        "FUNCTION fact(integer number) Example: \nfact(4)=24");
+      manual.put("sqrt",        "FUNCTION sqrt(POSITIVE real number) Example: \nsqrt(2) = 1.4");
+      manual.put("rt",          "FUNCTION rt(index : POSITIVE real number, radicand: POSITIVE real number if index is even, NEGATIVE real number if index is odd) Example: \nrt(3,-8) = 2");
+      manual.put("pow",         "FUNCTION pow(base: real number, exponent: real number) Example: \npow(2, -1) = 0.5");
+      manual.put("deg->rad",    "FUNCTION deg->rad(degrees) Example: \ndeg->rad(90) = -0.44");
+      manual.put("rad->deg",    "FUNCTION rad->deg(radians) Example: \ndeg->rad(-0.44) = 90");
+      manual.put("pi",          "CONSTANT pi  Example: \npi = 3.14159265358979323846");
+      manual.put("e",           "CONSTANT e Example: \ne = 2.71828182845905");
+      manual.put("mem",         "FUNCTION mem(1:first result or 10:last result) This function returns the result at position passed. Example: \nmem(10) = 3");
+      manual.put("convert",     "FUNCTION convert(decimal or binary or hexadecimal string) Example \nconvert(247242)");
+      manual.put("memory",      "COMMAND  memory Example:");
+
+      if(intitial_manual && functionMissunderstood==""){
+        System.out.println("\n\n\n\n############################################# INITIAL MANUAL ##############################################");
+        System.out.println("So far, this command-based scientific calculator supports 15 functions.\nLet's take an overview of the overall strcutre and then how each one works:\n");
+        System.out.println("The basic structure of this calculator is the following: \n\nlog(5,25) // you input a number or function \n+ // then a operand (+,-,*,/, or %) \n2 // and then another number or function \n>> 4.0");
+        System.out.println("You can choose between unique-mode operation or flow-operation mode; and can change through them typing # instead of an operand.");
+        System.out.println("\n##########################################  Example instuctions ##########################################");
+        for (Map.Entry<String,String> entry : manual.entrySet())  
+            System.out.println("## " + entry.getValue() + "\n");
+        System.out.println("if you want to remember how x function works, type help(x) and get and example."); 
+      } else {
+        System.out.print(manual.get(functionMissunderstood));
+      }
     }
 
 }
