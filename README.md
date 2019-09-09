@@ -33,7 +33,7 @@ Also, supports 2 modes: dynamic (which allows to make a flow of operations) and 
 <img src="src/imgs/uniqueModeDemo.jpg" alt="Unique Flow option demo"
      style="float: left; margin-right: 10px;" /> 
 
-### Swtich from dynamic to unqie-operation mode:
+### Swtich from dynamic to unique-operation mode:
 <img src="src/imgs/switchModeDemo.jpg" alt="Switch Flow option demo"
      style="float: left; margin-right: 10px;" /> 
 
@@ -43,6 +43,10 @@ Also, supports 2 modes: dynamic (which allows to make a flow of operations) and 
 
 ### Convert from hexadecimal to decimal and from degrees to radians 
 <img src="src/imgs/convertingDemo.jpg" alt="Switch Flow option demo"
+     style="float: left; margin-right: 10px;" />
+
+### help command
+<img src="src/imgs/helpCommand.jpg" alt="Switch Flow option demo"
      style="float: left; margin-right: 10px;" />
 
 ## Dependencies
