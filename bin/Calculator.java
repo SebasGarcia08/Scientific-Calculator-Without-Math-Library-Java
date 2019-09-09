@@ -582,7 +582,7 @@ public class Calculator{
             System.out.println("## " + entry.getValue() + "\n");
         System.out.println("if you want to remember how x function works, type help(x) and get and example."); 
       } else {
-        System.out.print(manual.get(functionMissunderstood));
+        System.out.print(manual.get(functionMissunderstood) + "\n");
       }
     }
 
