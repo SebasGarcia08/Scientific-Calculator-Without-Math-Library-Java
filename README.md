@@ -26,16 +26,24 @@ This repository holds the code for executing a CLI-based scientific calculator t
 Also, supports 2 modes: dynamic (which allows to make a flow of operations) and a unique-operation mode (which allows to do one operation).
 ## Examples:
 ### Dynamic mode:
-<img src="dynamicFlowDemo.jpg" alt="Dynamic Flow option demo"
+<img src="src/imgs/dynamicFlowDemo.jpg" alt="Dynamic Flow option demo"
      style="float: left; margin-right: 10px;" /> 
 
 ### Unique-operation mode:
-<img src="uniqueOperationMode.jpg" alt="Unique Flow option demo"
+<img src="src/imgs/uniqueModeDemo.jpg" alt="Unique Flow option demo"
      style="float: left; margin-right: 10px;" /> 
 
 ### Swtich from dynamic to unqie-operation mode:
-<img src="switchModeDemo.jpg" alt="Switch Flow option demo"
+<img src="src/imgs/switchModeDemo.jpg" alt="Switch Flow option demo"
      style="float: left; margin-right: 10px;" /> 
+
+### Show last ten results and accesing to memory
+<img src="src/imgs/accesingMemory.jpg" alt="Switch Flow option demo"
+     style="float: left; margin-right: 10px;" />
+
+### Convert from hexadecimal to decimal and from degrees to radians 
+<img src="src/imgs/convertingDemo.jpg" alt="Switch Flow option demo"
+     style="float: left; margin-right: 10px;" />
 
 ## Dependencies
 * Java
