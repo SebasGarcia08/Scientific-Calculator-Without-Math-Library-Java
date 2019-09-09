@@ -21,8 +21,22 @@ This repository holds the code for executing a CLI-based scientific calculator t
 * Pi
 * Euler's number
 * Memory of last 10 results
+* Scientific notation.
 * Conversion among decimal, hexadecimal and binary
 Also, supports 2 modes: dynamic (which allows to make a flow of operations) and a unique-operation mode (which allows to do one operation).
+## Examples:
+### Dynamic mode:
+<img src="dynamicFlowDemo.jpg" alt="Dynamic Flow option demo"
+     style="float: left; margin-right: 10px;" /> 
+
+### Unique-operation mode:
+<img src="uniqueOperationMode.jpg" alt="Unique Flow option demo"
+     style="float: left; margin-right: 10px;" /> 
+
+### Swtich from dynamic to unqie-operation mode:
+<img src="switchModeDemo.jpg" alt="Switch Flow option demo"
+     style="float: left; margin-right: 10px;" /> 
+
 ## Dependencies
 * Java
 
