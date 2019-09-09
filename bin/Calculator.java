@@ -127,7 +127,7 @@ public class Calculator{
    * functionsCalculator is encharged of assigning its corrsponding value to the num1 and num2 variables above. <br>
    * Which is achieved by parsing the string input and deciding wheter is a plain number or a function.
    * <b>post: <b/> num1 and num2 will never have a invalid value since their value always is parsed using this method. 
-   * @param parser must have a value assgined to it; i cannot be null or empty. 
+   * @param parser must have a value assgined to it; it cannot be null or empty. 
    * @return a double number corresponding to the value expressed in parser; if this isn't valid, then returns 0 and notifies it to the user. 
    */
     public static double functionsCalculator(String parser){
@@ -167,13 +167,13 @@ public class Calculator{
             
           switch(func_indicator){
             case "cos":
-              num1 = Math.cos(params[0]);
+              num1 = cosApprox(params[0]);
               break;
             case "sin":
-              num1 = sin(params[0]);
+              num1 = sinApprox(params[0]);
               break;
             case "tan":
-              num1 = sin(params[0])/Math.cos(params[0]);
+              num1 = sinApprox(params[0])/cosApprox(params[0]);
               break;
             case "log10":
               num1 = log(10, params[0]);
@@ -285,9 +285,8 @@ public class Calculator{
       return x0;
   }
 
-
   public static boolean accurate(double x0, double x1) {
-      return Math.abs(x1-x0) < 0.000001;
+      return abs(x1-x0) < 0.000001;
   }
 
   /**
@@ -411,7 +410,7 @@ public class Calculator{
 
 /**
  * Calculates the n-th power for base number a. <br>
- * @param a must be declared and initalized number.
+ * @param x must be declared and initalized number.
  * @param n must be declared and initalized number.
  * @return the n-th power for base number a.
  */
@@ -424,12 +423,11 @@ public class Calculator{
 
   /**
    * Calculates the approximate value of sinusodial function for number a using Taylor series with periodic accuracy improvement. <br>
-   * @param a cannot be infinity, must be real number.
+   * @param x cannot be infinity, must be real number.
    * @return aproximation value of sinusodial function at point a.
    */
-  public static double sin(double a) {
-
-    if (a == Double.NEGATIVE_INFINITY || !(a < Double.POSITIVE_INFINITY)) {
+  public static double sinApprox(double x) {
+    if (x == Double.NEGATIVE_INFINITY || !(x < Double.POSITIVE_INFINITY)) {
         return Double.NaN;
     }
     // If you can't use Math.PI neither,
@@ -438,17 +436,17 @@ public class Calculator{
     // Fix the domain for a...
 
     // Sine is a periodic function with period = 2*PI
-    a %= 2 * PI;
+    x %= 2 * PI;
     // Any negative angle can be brought back
     // to it's equivalent positive angle
-    if (a < 0) {
-        a = 2 * PI - a;
+    if (x < 0) {
+        x = 2 * PI - x;
     }
     // Also sine is an odd function...
     // let's take advantage of it.
     int sign = 1;
-    if (a > PI) {
-        a -= PI;
+    if (x > PI) {
+        x -= PI;
         sign = -1;
     }
     // Now a is in range [0, pi].
@@ -462,10 +460,34 @@ public class Calculator{
     final int PRECISION = 84;
     double temp = 0;
     for (int i = 0; i <= PRECISION; i++) {
-        temp += pow(-1, i) * (pow(a, 2 * i + 1) / factorial(2 * i + 1));
+        temp += pow(-1, i) * (pow(x, 2 * i + 1) / factorial(2 * i + 1));
     }
     return sign * temp;
 }
+
+/**
+ * Calculates approximation value for cosine function through Taylor Series expansion
+ * @param x must be real number value.
+ * @return approximation (in radians) to the cosine function at point x. 
+ */
+  public static double cosApprox(double x){   
+      double solution = 1;
+      double eachTerm = 1;
+      int termsSoFar = 1;
+      for(int i = 1; i < (2 * 100); ++i){   
+        eachTerm *= x / i;
+          if(i % 2 == 0){   
+            ++termsSoFar;
+              if(termsSoFar % 2 == 0) {   
+                solution -= eachTerm;
+              }
+              else{   
+                solution += eachTerm;
+              }
+          }
+      }
+      return solution;
+  }
 
   public static double rad2Degrees(double radians){
     double degrees = radians * 180.0 / PI;
@@ -511,6 +533,7 @@ public class Calculator{
         }
         return hex;
     }
+
     /**
      * Calculates the integer value for String input s.<br>
      * @param s must be compatible with hexadecimal system.
